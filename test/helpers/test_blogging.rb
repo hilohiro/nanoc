@@ -729,7 +729,7 @@ class Nanoc::Helpers::BloggingTest < Nanoc::TestCase
     end
   end
 
-  def test_url_for_against_item_rep_without_custom_path_in_feed
+  def test_url_for_without_custom_path_in_feed_against_item_rep
     # Create site
     @site = Nanoc::Site.new({ :base_url => 'http://example.com' })
 
@@ -746,7 +746,7 @@ class Nanoc::Helpers::BloggingTest < Nanoc::TestCase
     @item = nil
   end
 
-  def test_url_for_against_item_rep_with_custom_path_in_feed
+  def test_url_for_with_custom_path_in_feed_against_item_rep
     # Create site
     @site = Nanoc::Site.new({ :base_url => 'http://example.com' })
 
