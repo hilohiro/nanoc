@@ -91,7 +91,7 @@ module Nanoc::Helpers
 
       def sorted_relevant_articles
         relevant_articles.sort_by do |a|
-          attribute_to_time(a[:created_at])
+          attribute_to_time(rep_to_item(a)[:created_at])
         end.reverse.first(limit)
       end
 
@@ -121,7 +121,7 @@ module Nanoc::Helpers
         if relevant_articles.empty?
           raise Nanoc::Errors::GenericTrivial.new('Cannot build Atom feed: no articles')
         end
-        if relevant_articles.any? { |a| a[:created_at].nil? }
+        if relevant_articles.any? { |a| rep_to_item(a)[:created_at].nil? }
           raise Nanoc::Errors::GenericTrivial.new('Cannot build Atom feed: one or more articles lack created_at')
         end
       end
@@ -136,7 +136,7 @@ module Nanoc::Helpers
           xml.title   title
 
           # Add date
-          xml.updated(attribute_to_time(last_article[:created_at]).to_iso8601_time)
+          xml.updated(attribute_to_time(rep_to_item(last_article)[:created_at]).to_iso8601_time)
 
           # Add links
           xml.link(:rel => 'alternate', :href => root_url)
@@ -167,6 +167,8 @@ module Nanoc::Helpers
         xml.entry do
           # Add primary attributes
           xml.id        atom_tag_for(a)
+          item_or_rep = a
+          a = rep_to_item(a)
           xml.title     a[:title], :type => 'html'
 
           # Add dates
@@ -185,8 +187,8 @@ module Nanoc::Helpers
           xml.link(:rel => 'alternate', :href => url)
 
           # Add content
-          summary = excerpt_proc.call(a)
-          xml.content   content_proc.call(a), :type => 'html'
+          summary = excerpt_proc.call(item_or_rep)
+          xml.content   content_proc.call(item_or_rep), :type => 'html'
           xml.summary   summary, :type => 'html' unless summary.nil?
         end
       end
@@ -310,7 +312,7 @@ module Nanoc::Helpers
       builder.limit             = params[:limit] || 5
       builder.relevant_articles = params[:articles] || articles || []
       builder.content_proc      = params[:content_proc] || lambda { |a| a.compiled_content(:snapshot => :pre) }
-      builder.excerpt_proc      = params[:excerpt_proc] || lambda { |a| a[:excerpt] }
+      builder.excerpt_proc      = params[:excerpt_proc] || lambda { |a| rep_to_item(a)[:excerpt] }
       builder.title             = params[:title] || @item[:title] || @site.config[:title]
       builder.author_name       = params[:author_name] || @item[:author_name] || @site.config[:author_name]
       builder.author_uri        = params[:author_uri] || @item[:author_uri] || @site.config[:author_uri]
