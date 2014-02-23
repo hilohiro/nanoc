@@ -616,6 +616,34 @@ class Nanoc::Helpers::BloggingTest < Nanoc::TestCase
     end
   end
 
+  def test_atom_feed_with_articles_param_against_item_rep
+    if_have 'builder' do
+      # Mock items
+      @items = [ mock_article, mock_article ]
+
+      @items[0].expects(:compiled_content).never
+      @items[1].stubs(:[]).with(:title).returns('Item One')
+      rep = mock
+      rep.stubs(:item).returns(@items[1])
+      rep.expects(:compiled_content).with(:snapshot => :pre).returns('asdf')
+      rep.stubs(:path).returns('/foo/bar/rep')
+
+      # Mock site
+      @site = mock
+      @site.stubs(:config).returns({ :base_url => 'http://example.com' })
+
+      # Create feed item
+      @item = mock
+      @item.stubs(:[]).with(:title).returns('My Blog Or Something')
+      @item.stubs(:[]).with(:author_name).returns('J. Doe')
+      @item.stubs(:[]).with(:author_uri).returns('http://example.com/~jdoe')
+      @item.stubs(:[]).with(:[]).with(:feed_url).returns('http://example.com/feed')
+
+      # Check
+      atom_feed :articles => [ rep ]
+    end
+  end
+
   def test_url_for_without_custom_path_in_feed
     # Create site
     @site = Nanoc::Site.new({ :base_url => 'http://example.com' })
