@@ -365,11 +365,13 @@ module Nanoc::Helpers
     # ["How to make a good ID in Atom" blog post]
     # (http://web.archive.org/web/20110915110202/http://diveintomark.org/archives/2004/05/28/howto-atom-id).
     #
-    # @param [Nanoc::Item] item The item for which to create an atom tag
+    # @param [Nanoc::Item, Nanoc::ItemRep] item_or_rep The item or item representation for which to create an atom tag
     #
     # @return [String] The atom tag for the given item
-    def atom_tag_for(item)
+    def atom_tag_for(item_or_rep)
       hostname, base_dir = %r{^.+?://([^/]+)(.*)$}.match(@site.config[:base_url])[1..2]
+
+      item = Nanoc::ItemRep === item_or_rep ? item_or_rep.item : item_or_rep
 
       formatted_date = attribute_to_time(item[:created_at]).to_iso8601_date
 
