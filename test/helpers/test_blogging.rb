@@ -827,4 +827,73 @@ class Nanoc::Helpers::BloggingTest < Nanoc::TestCase
     assert_equal('tag:example.com,2008-05-19:/foo/bar/', atom_tag_for(item))
   end
 
+  def test_atom_tag_for_with_path_against_item_rep
+    # Create site
+    @site = Nanoc::Site.new({ :base_url => 'http://example.com' })
+
+    # Create article
+    item = Nanoc::Item.new('content', { :created_at => '2008-05-19' }, '/foo/')
+    rep = Nanoc::ItemRep.new(item, :default)
+    rep.path = '/foo/bar/'
+    item.reps << rep
+
+    # Check
+    assert_equal('tag:example.com,2008-05-19:/foo/bar/', atom_tag_for(rep))
+  end
+
+  def test_atom_tag_for_without_path_against_item_rep
+    # Create site
+    @site = Nanoc::Site.new({ :base_url => 'http://example.com' })
+
+    # Create article
+    item = Nanoc::Item.new('content', { :created_at => '2008-05-19' }, '/baz/qux/')
+    rep = Nanoc::ItemRep.new(item, :default)
+    item.reps << rep
+
+    # Check
+    assert_equal('tag:example.com,2008-05-19:/baz/qux/', atom_tag_for(rep))
+  end
+
+  def test_atom_tag_for_with_base_url_in_dir_against_item_rep
+    # Create site
+    @site = Nanoc::Site.new({ :base_url => 'http://example.com/somedir' })
+
+    # Create article
+    item = Nanoc::Item.new('content', { :created_at => '2008-05-19' }, '/foo/')
+    rep = Nanoc::ItemRep.new(item, :default)
+    rep.path = '/foo/bar/'
+    item.reps << rep
+
+    # Check
+    assert_equal('tag:example.com,2008-05-19:/somedir/foo/bar/', atom_tag_for(rep))
+  end
+
+  def test_atom_tag_for_with_time_against_item_rep
+    # Create site
+    @site = Nanoc::Site.new({ :base_url => 'http://example.com' })
+
+    # Create article
+    item = Nanoc::Item.new('content', { :created_at => Time.parse('2008-05-19') }, '/foo/')
+    rep = Nanoc::ItemRep.new(item, :default)
+    rep.path = '/foo/bar/'
+    item.reps << rep
+
+    # Check
+    assert_equal('tag:example.com,2008-05-19:/foo/bar/', atom_tag_for(rep))
+  end
+
+  def test_atom_tag_for_with_date_against_item_rep
+    # Create site
+    @site = Nanoc::Site.new({ :base_url => 'http://example.com' })
+
+    # Create article
+    item = Nanoc::Item.new('content', { :created_at => Date.parse('2008-05-19') }, '/foo/')
+    rep = Nanoc::ItemRep.new(item, :default)
+    rep.path = '/foo/bar/'
+    item.reps << rep
+
+    # Check
+    assert_equal('tag:example.com,2008-05-19:/foo/bar/', atom_tag_for(rep))
+  end
+
 end
