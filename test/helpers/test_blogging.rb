@@ -729,6 +729,40 @@ class Nanoc::Helpers::BloggingTest < Nanoc::TestCase
     end
   end
 
+  def test_url_for_against_item_rep_without_custom_path_in_feed
+    # Create site
+    @site = Nanoc::Site.new({ :base_url => 'http://example.com' })
+
+    # Create article
+    item = Nanoc::Item.new('content', {}, '/foo/')
+    rep = Nanoc::ItemRep.new(item, :default)
+    rep.path = '/foo/bar/'
+    item.reps << rep
+
+    # Check
+    assert_equal('http://example.com/foo/bar/', url_for(rep))
+  ensure
+    # Cleanup
+    @item = nil
+  end
+
+  def test_url_for_against_item_rep_with_custom_path_in_feed
+    # Create site
+    @site = Nanoc::Site.new({ :base_url => 'http://example.com' })
+
+    # Create article
+    item = Nanoc::Item.new(
+      'content', { :custom_path_in_feed => '/meow/woof/' }, '/foo/')
+    rep = Nanoc::ItemRep.new(item, :default)
+    item.reps << rep
+
+    # Check
+    assert_equal('http://example.com/meow/woof/', url_for(rep))
+  ensure
+    # Cleanup
+    @item = nil
+  end
+
   def test_atom_tag_for_with_path
     # Create site
     @site = Nanoc::Site.new({ :base_url => 'http://example.com' })
