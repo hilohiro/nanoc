@@ -325,14 +325,16 @@ module Nanoc::Helpers
     # Returns the URL for the given item. It will return the URL containing
     # the custom path in the feed if possible, otherwise the normal path.
     #
-    # @param [Nanoc::Item] item The item for which to fetch the URL.
+    # @param [Nanoc::Item, Nanoc::ItemRep] item_or_rep The item or item representation for which to fetch the URL.
     #
     # @return [String] The URL of the given item
-    def url_for(item)
+    def url_for(item_or_rep)
       # Check attributes
       if @site.config[:base_url].nil?
         raise Nanoc::Errors::GenericTrivial.new('Cannot build Atom feed: site configuration has no base_url')
       end
+
+      item = Nanoc::ItemRep === item_or_rep ? item_or_rep.item : item_or_rep
 
       # Build URL
       if item[:custom_url_in_feed]
