@@ -334,7 +334,7 @@ module Nanoc::Helpers
         raise Nanoc::Errors::GenericTrivial.new('Cannot build Atom feed: site configuration has no base_url')
       end
 
-      item = Nanoc::ItemRep === item_or_rep ? item_or_rep.item : item_or_rep
+      item = rep_to_item(item_or_rep)
 
       # Build URL
       if item[:custom_url_in_feed]
@@ -371,7 +371,7 @@ module Nanoc::Helpers
     def atom_tag_for(item_or_rep)
       hostname, base_dir = %r{^.+?://([^/]+)(.*)$}.match(@site.config[:base_url])[1..2]
 
-      item = Nanoc::ItemRep === item_or_rep ? item_or_rep.item : item_or_rep
+      item = rep_to_item(item_or_rep)
 
       formatted_date = attribute_to_time(item[:created_at]).to_iso8601_date
 
@@ -391,6 +391,9 @@ module Nanoc::Helpers
       time
     end
 
+    def rep_to_item(item_or_rep)
+      item_or_rep.respond_to?(:item) ? item_or_rep.item : item_or_rep
+    end
   end
 
 end
